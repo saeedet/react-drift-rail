@@ -4,7 +4,9 @@
 
 A small React component for a horizontally draggable strip of images, cards, or arbitrary content. It uses native scrolling, preserves touch momentum, and adds mouse/pen dragging and keyboard navigation. No slides, autoplay, or active-item state.
 
-**Status:** pre-release. `react-drift-rail` is the proposed npm name; this repository is intentionally marked private until release metadata is configured. The package has **zero runtime dependencies** beyond React peers. No Tailwind or CSS framework required.
+**Status:** pre-release. `react-drift-rail` is the proposed npm name; npm publishing is intentionally disabled with `private: true` until the first release. The GitHub repository and playground are public. The package has **zero runtime dependencies** beyond React peers. No Tailwind or CSS framework required.
+
+[Try the live playground](https://saeedet.github.io/react-drift-rail/) — adjust the starting position, tilt, scrollbars, spacing, and momentum.
 
 ## Quick start
 

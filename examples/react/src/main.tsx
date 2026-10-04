@@ -37,7 +37,7 @@ function App() {
           drift rail<span className="version">v0.1</span>
         </a>
         <nav aria-label="Main">
-          <a href="#playground">Playground</a>
+          <a href="https://github.com/saeedet/react-drift-rail">GitHub</a>
           <a href="#usage">
             Get started <span aria-hidden="true">↗</span>
           </a>
@@ -99,7 +99,13 @@ function App() {
           >
             {scenes.map(([id, name, label], index) => (
               <figure className={`photo photo-${index}`} key={id}>
-                <img src={`/${id}.svg`} alt={name} width="400" height="480" draggable={false} />
+                <img
+                  src={`${import.meta.env.BASE_URL}${id}.svg`}
+                  alt={name}
+                  width="400"
+                  height="480"
+                  draggable={false}
+                />
                 <figcaption>
                   <span>{label}</span>
                   <strong>{name}</strong>
@@ -313,7 +319,7 @@ function App() {
               <br />
               Use ordinary images, Next.js Image, or any React child.
             </p>
-            <span className="release-note">Local preview · npm release pending</span>
+            <span className="release-note">Open source · npm release pending</span>
           </div>
           <div className="code-window">
             <div className="code-title">
