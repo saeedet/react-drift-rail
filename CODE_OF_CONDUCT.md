@@ -6,4 +6,4 @@ Harassment, threats, discrimination, sexualized conduct, personal attacks, and d
 
 Maintainers may edit or remove harmful material, restrict participation, or remove access when needed. They should apply these rules consistently and explain moderation decisions privately where appropriate.
 
-Report concerns privately to the repository's listed maintainers. Before opening this project to public participation, the owner should add a reliable private conduct contact to this document. Do not post sensitive reports in public issues.
+The project maintainer is [Saeed ET (@saeedet)](https://github.com/saeedet). Use a private contact channel listed on the maintainer's profile to report conduct concerns. If none is available, request a private contact channel in an issue without sharing incident details. Do not post sensitive reports in public issues.

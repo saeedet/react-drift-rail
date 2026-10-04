@@ -99,5 +99,17 @@
   },
   "overrides": {
     "esbuild": "^0.28.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saeedet/react-drift-rail.git"
+  },
+  "homepage": "https://github.com/saeedet/react-drift-rail#readme",
+  "bugs": {
+    "url": "https://github.com/saeedet/react-drift-rail/issues"
+  },
+  "author": {
+    "name": "Saeed ET",
+    "url": "https://github.com/saeedet"
   }
 }

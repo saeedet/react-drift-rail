@@ -1,5 +1,7 @@
 # Drift Rail
 
+[![CI](https://github.com/saeedet/react-drift-rail/actions/workflows/ci.yml/badge.svg)](https://github.com/saeedet/react-drift-rail/actions/workflows/ci.yml)
+
 A small React component for a horizontally draggable strip of images, cards, or arbitrary content. It uses native scrolling, preserves touch momentum, and adds mouse/pen dragging and keyboard navigation. No slides, autoplay, or active-item state.
 
 **Status:** pre-release. `react-drift-rail` is the proposed npm name; this repository is intentionally marked private until release metadata is configured. The package has **zero runtime dependencies** beyond React peers. No Tailwind or CSS framework required.
@@ -28,7 +30,7 @@ export function Gallery() {
 
 Before publication, run `npm ci && npm run dev` in this repository to try the playground. To install into another application, run `npm pack` here, then `npm install /absolute/path/to/react-drift-rail-0.1.0.tgz` in that application. The package requires its stylesheet; content remains ordinary HTML during SSR.
 
-![Drift Rail playground](docs/demo.png)
+![Drift Rail playground](https://raw.githubusercontent.com/saeedet/react-drift-rail/main/docs/demo.png)
 
 ## API
 
@@ -180,7 +182,7 @@ export default function Page() {
 
 Import `react-drift-rail/styles.css` once in `app/layout.tsx` (or `pages/_app.tsx` for the Pages Router). If using refs or callback props, place that composition in your own Client Component with `'use client'`. Drift Rail has no Next.js runtime dependency and does not wrap, fetch, or optimize your images. Set image dimensions to avoid layout shift.
 
-See the runnable [Next.js example](examples/next) and [React playground](examples/react). Both share the repository's development dependencies; this is a single-package repository, not a workspace monorepo.
+See the runnable [Next.js example](https://github.com/saeedet/react-drift-rail/tree/main/examples/next) and [React playground](https://github.com/saeedet/react-drift-rail/tree/main/examples/react). Both share the repository's development dependencies; this is a single-package repository, not a workspace monorepo.
 
 ## Accessibility and input behavior
 
@@ -193,11 +195,11 @@ See the runnable [Next.js example](examples/next) and [React playground](example
 - A six-pixel horizontal threshold distinguishes clicks from dragging. Vertical gestures yield. Only an active custom drag calls `preventDefault()` on pointer movement.
 - A child or consumer can veto a pointer start in `onPointerDownCapture` using `preventDefault()`. The controller uses native listeners, so React bubble handlers run after its pointerdown listener.
 
-Automated checks cover interaction and common WCAG rules; they do not replace manual screen-reader and real-device testing. See [validation](docs/VALIDATION.md) for actual coverage and limits.
+Automated checks cover interaction and common WCAG rules; they do not replace manual screen-reader and real-device testing. See [validation](https://github.com/saeedet/react-drift-rail/blob/main/docs/VALIDATION.md) for actual coverage and limits.
 
 ## Browser support
 
-Target: current evergreen Chrome/Chromium, Firefox, Safari, mobile Safari, and Chromium Android. Required APIs include Pointer Events, pointer capture, `requestAnimationFrame`, and `MediaQueryList.addEventListener`; no legacy polyfills are shipped. The test matrix uses Playwright Chromium, Firefox, and WebKit plus mobile viewport/touch emulation. On macOS 14, current Playwright cannot create a page in its frozen WebKit build; see the validated workaround and exact test results in [validation](docs/VALIDATION.md).
+Target: current evergreen Chrome/Chromium, Firefox, Safari, mobile Safari, and Chromium Android. Required APIs include Pointer Events, pointer capture, `requestAnimationFrame`, and `MediaQueryList.addEventListener`; no legacy polyfills are shipped. The test matrix uses Playwright Chromium, Firefox, and WebKit plus mobile viewport/touch emulation. On macOS 14, current Playwright cannot create a page in its frozen WebKit build; see the validated workaround and exact test results in [validation](https://github.com/saeedet/react-drift-rail/blob/main/docs/VALIDATION.md).
 
 RTL uses the modern negative `scrollLeft` model and clamps overscroll. Legacy positive/reversed RTL models are unsupported. See [MDN's scrollLeft documentation](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollLeft). Native touch behavior follows [touch-action](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/touch-action). WebKit automation is useful coverage, but is not a claim of testing physical iPhones or the shipping Safari application.
 
@@ -220,13 +222,13 @@ npm run test:next             # Production App Router hydration and dragging
 npm run format
 ```
 
-`npm run dev` consumes source for fast feedback. Next.js and the tarball smoke tests consume built exports. Rebuild after library edits before using the Next.js example. `npm run size` budgets each JS entry to 6 KiB gzip and CSS to 1 KiB gzip, verifies package contents, and checks that React is external. Actual sizes and test results are recorded in [validation](docs/VALIDATION.md).
+`npm run dev` consumes source for fast feedback. Next.js and the tarball smoke tests consume built exports. Rebuild after library edits before using the Next.js example. `npm run size` budgets each JS entry to 6 KiB gzip and CSS to 1 KiB gzip, verifies package contents, and checks that React is external. Actual sizes and test results are recorded in [validation](https://github.com/saeedet/react-drift-rail/blob/main/docs/VALIDATION.md).
 
 ## Contributing and releases
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), and [SECURITY.md](SECURITY.md). Small focused changes with reproducible interaction tests are welcome. [Architecture notes](docs/ARCHITECTURE.md) explain the design choices.
+Read [CONTRIBUTING.md](https://github.com/saeedet/react-drift-rail/blob/main/CONTRIBUTING.md), [CODE_OF_CONDUCT.md](https://github.com/saeedet/react-drift-rail/blob/main/CODE_OF_CONDUCT.md), and [SECURITY.md](https://github.com/saeedet/react-drift-rail/blob/main/SECURITY.md). Small focused changes with reproducible interaction tests are welcome. [Architecture notes](https://github.com/saeedet/react-drift-rail/blob/main/docs/ARCHITECTURE.md) explain the design choices.
 
-Versioning follows SemVer. Before 1.0, breaking API changes increment the minor version and are documented in the changelog. Follow [the publishing checklist](docs/PUBLISHING.md) before the first release. No npm package or GitHub repository is created by this local project.
+Versioning follows SemVer. Before 1.0, breaking API changes increment the minor version and are documented in the changelog. Follow [the publishing checklist](https://github.com/saeedet/react-drift-rail/blob/main/docs/PUBLISHING.md) before the first release. The project is maintained at [saeedet/react-drift-rail](https://github.com/saeedet/react-drift-rail). The npm package remains unpublished.
 
 ## Roadmap
 

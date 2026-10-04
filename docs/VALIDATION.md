@@ -1,6 +1,6 @@
 # Validation record
 
-Validated on 2026-10-04 on macOS 14.6.1 arm64 with Node 26.0.0 and npm 11.12.1. CI is configured for Node 24 on Ubuntu; hosted GitHub Actions have not been executed because no remote repository has been created.
+Validated on 2026-10-04 on macOS 14.6.1 arm64 with Node 26.0.0 and npm 11.12.1. CI is configured for Node 24 on Ubuntu. Hosted results are available in the [CI workflow](https://github.com/saeedet/react-drift-rail/actions/workflows/ci.yml); the results below describe local validation.
 
 ## Passed locally
 
@@ -9,9 +9,9 @@ Validated on 2026-10-04 on macOS 14.6.1 arm64 with Node 26.0.0 and npm 11.12.1. 
 | Library build                   | ESM, CJS, declarations, CSS, source maps generated                                                      |
 | Strict TypeScript               | Source plus consumer test using package exports passed                                                  |
 | ESLint / Prettier               | Passed                                                                                                  |
-| Unit / SSR tests                | 29 passed                                                                                               |
-| Current Playwright 1.63.0       | 22 browser cases passed; 2 intentionally skipped                                                        |
-| Supplementary Playwright 1.61.1 | 14 WebKit cases passed; 2 intentionally skipped                                                         |
+| Unit / SSR tests                | 44 passed                                                                                               |
+| Current Playwright 1.63.0       | 37 browser cases passed; 2 intentionally skipped                                                        |
+| Supplementary Playwright 1.61.1 | 24 WebKit cases passed; 2 intentionally skipped                                                         |
 | React demo production build     | Passed with Vite 8.3.2                                                                                  |
 | Next.js production build        | Passed with Next.js 16.3.8; App Router page prerendered                                                 |
 | Next.js production browser test | 1 passed: built package imports, six Next Image children, hydration, keyboard, dragging, no page errors |
@@ -21,7 +21,7 @@ Validated on 2026-10-04 on macOS 14.6.1 arm64 with Node 26.0.0 and npm 11.12.1. 
 | Dependency audit                | Zero vulnerabilities reported, including development dependencies                                       |
 | Visual inspection               | Desktop 1440px and mobile 390px checked; no clipping or document-wide horizontal overflow observed      |
 
-Tests cover rendering, refs, movement threshold, clicks, pointer cancellation, lost capture, blur, button release, disabled dragging, pointer filtering, pen dispatch, native touch delegation, editable controls, nested rails, consumer overrides, callback freshness, Strict Mode, keyboard boundaries, RTL, cleanup, optional inertia, reduced motion, and stationary release.
+Tests cover rendering, refs, movement threshold, clicks, pointer cancellation, lost capture, blur, button release, disabled dragging, pointer filtering, pen dispatch, native touch delegation, editable controls, nested rails, consumer overrides, callback freshness, Strict Mode, keyboard boundaries, RTL, cleanup, optional inertia, reduced motion, and stationary release. Added coverage verifies initial start/center/end positions, both RTL directions, late image widths, async children, observer cleanup, preserved reading positions after interaction, hidden-scrollbar toggles, and optional demo tilt.
 
 The browser matrix checks real scrolling, dragging, click suppression, focus/child keyboard behavior, RTL, reduced motion, and automated WCAG 2 A/AA and 2.1 AA rules with axe. Chromium mobile additionally receives actual injected touch sequences: horizontal rail movement and vertical page movement both passed. Other projects skip that CDP-specific test. No physical-device, screen-reader, pinch gesture, or hardware stylus validation is claimed.
 
@@ -35,7 +35,7 @@ browserContext.newPage: Protocol error (Page.overrideSetting): Unknown setting: 
 
 This happens before application code executes. The unfiltered `npm run test:e2e` therefore does **not** pass on this specific host with the committed current runner. The project keeps the full WebKit matrix enabled for supported hosts/CI, rather than hiding these failures.
 
-An isolated Playwright 1.61.1 installation outside the repository successfully ran the same test source against the same local demo and the frozen WebKit. Desktop Safari and iPhone 13 profiles each passed seven applicable tests. The mobile WebKit profile uses native `scrollBy` in place of unsupported wheel injection. The two CDP-only touch cases were skipped. No package code or dependency files were patched to obtain these results.
+An isolated Playwright 1.61.1 installation outside the repository successfully ran the same test source against the same local demo and the frozen WebKit. Desktop Safari and iPhone 13 profiles each passed twelve applicable tests. The mobile WebKit profile uses native `scrollBy` in place of unsupported wheel injection. The two CDP-only touch cases were skipped. No package code or dependency files were patched to obtain these results.
 
 To reproduce the current-runner checks on this Mac:
 
@@ -67,11 +67,11 @@ At this revision, `npm run size` reports:
 
 | Artifact            | Bytes | Gzip bytes |
 | ------------------- | ----: | ---------: |
-| ESM JavaScript      | 4,970 |      2,138 |
-| CommonJS JavaScript | 5,484 |      2,376 |
-| CSS                 |   565 |        314 |
+| ESM JavaScript      | 6,132 |      2,480 |
+| CommonJS JavaScript | 6,667 |      2,714 |
+| CSS                 |   730 |        352 |
 
-The npm tarball is 17,872 bytes compressed (69,268 bytes unpacked), including declarations, both formats, source maps, README, changelog, license, and package metadata. Documentation/metadata changes can change tarball size without changing runtime size. Enforced budgets are 6 KiB gzip per JS entry and 1 KiB gzip for CSS. React is a peer dependency and excluded from these sizes.
+Run `npm run size` for the current tarball size (roughly 21 KB compressed), including declarations, both formats, source maps, README, changelog, license, and package metadata. Documentation/metadata changes can change tarball size without changing runtime size. Enforced budgets are 6 KiB gzip per JS entry and 1 KiB gzip for CSS. React is a peer dependency and excluded from these sizes.
 
 ## Remaining acceptance checks
 
