@@ -15,3 +15,5 @@ The build uses tsup with React and JSX runtime externalized. Both ESM and CJS pr
 Next.js is a development dependency solely for validating the example. No module evaluates DOM globals during import. Effects install behavior after mounting, so SSR produces real children and a scrollable container before enhancement.
 
 Version 1 excludes a bespoke imperative handle, configurable physics knobs, snapping, and slide state. Consumers have the native element ref and ordinary CSS. The public callbacks describe gestures without exposing controller details.
+
+Initial viewport placement runs in a stable ref callback, before client paint and without a server layout effect. `src/core/initial-position.ts` observes the container and direct items until scrolling intent occurs, then disconnects. This permits late content/image layout without continually re-centering after the reader has moved. The initial prop is captured once; remounting resets it. The default start position preserves native initial scroll behavior and creates no observers.

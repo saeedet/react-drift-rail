@@ -1,5 +1,6 @@
 import {
   forwardRef,
+  useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -8,11 +9,14 @@ import {
 } from 'react';
 import { attachDragging, type RailDragInfo, type RailDragEndInfo } from './core/controller';
 import { clamp, scrollBounds } from './core/math';
+import { attachInitialPosition, type InitialPosition } from './core/initial-position';
 
 export interface DraggableRailProps extends Omit<
   HTMLAttributes<HTMLDivElement>,
   'onDragStart' | 'onDragEnd'
 > {
+  /** Reading-order initial viewport. Read once on mount. Default: 'start'. */
+  initialPosition?: InitialPosition;
   /** Item spacing; numbers are pixels. Default: 16. */
   gap?: CSSProperties['gap'];
   /** Disable custom pointer dragging; native scrolling and keyboard remain. */
@@ -26,6 +30,7 @@ export interface DraggableRailProps extends Omit<
 export const DraggableRail = forwardRef<HTMLDivElement, DraggableRailProps>(function DraggableRail(
   {
     children,
+    initialPosition = 'start',
     gap = 16,
     dragEnabled = true,
     momentum = false,
@@ -40,7 +45,15 @@ export const DraggableRail = forwardRef<HTMLDivElement, DraggableRailProps>(func
   },
   forwardedRef,
 ) {
-  const elementRef = useRef<HTMLDivElement>(null);
+  const elementRef = useRef<HTMLDivElement | null>(null);
+  const initial = useRef(initialPosition);
+  const cleanupPosition = useRef<(() => void) | undefined>(undefined);
+  const setElement = useCallback((element: HTMLDivElement | null) => {
+    cleanupPosition.current?.();
+    cleanupPosition.current = undefined;
+    elementRef.current = element;
+    if (element) cleanupPosition.current = attachInitialPosition(element, initial.current);
+  }, []);
   const callbacks = useRef({ onDragStart, onDragEnd });
   useEffect(() => {
     callbacks.current = { onDragStart, onDragEnd };
@@ -59,7 +72,7 @@ export const DraggableRail = forwardRef<HTMLDivElement, DraggableRailProps>(func
   return (
     <div
       {...props}
-      ref={elementRef}
+      ref={setElement}
       role={role ?? (named ? 'region' : undefined)}
       tabIndex={tabIndex}
       className={['drift-rail', className].filter(Boolean).join(' ')}

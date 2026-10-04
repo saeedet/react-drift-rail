@@ -6,7 +6,7 @@ it('imports and renders without browser globals', () => {
   expect(typeof window).toBe('undefined');
   expect(
     renderToString(
-      <DraggableRail aria-label="SSR gallery">
+      <DraggableRail aria-label="SSR gallery" initialPosition="center">
         <span>Server content</span>
       </DraggableRail>,
     ),

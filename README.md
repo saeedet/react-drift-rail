@@ -37,6 +37,7 @@ Before publication, run `npm ci && npm run dev` in this repository to try the pl
 | Prop                                | Type                              | Default   | Purpose                                                     |
 | ----------------------------------- | --------------------------------- | --------- | ----------------------------------------------------------- |
 | `children`                          | `ReactNode`                       | —         | Any React content                                           |
+| `initialPosition`                   | `'start' \| 'center' \| 'end'`    | `'start'` | Initial reading-order viewport, read once on mount          |
 | `gap`                               | CSS `gap` value                   | `16`      | Numbers are pixels; strings accept CSS lengths              |
 | `dragEnabled`                       | `boolean`                         | `true`    | Enables custom mouse/pen dragging                           |
 | `momentum`                          | `boolean`                         | `false`   | Adds mouse/pen inertia after release                        |
@@ -51,6 +52,22 @@ Before publication, run `npm ci && npm run dev` in this repository to try the pl
 `RailDragInfo` contains `pointerType: 'mouse' | 'pen'` and `scrollLeft: number`. `RailDragEndInfo` also contains `cancelled: boolean`. These are **rail gesture callbacks**, not HTML drag-and-drop events. Native touch scrolling does not invoke them. Cleanup on unmount or a `dragEnabled`/`momentum` configuration change stops the gesture without emitting callbacks. Use `onScroll` to observe all scrolling, including touch and programmatic changes.
 
 Exported types: `DraggableRailProps`, `RailDragInfo`, `RailDragEndInfo`. No private engine types are public exports. React 18.2 and React 19 are supported.
+
+## Start in the middle
+
+```tsx
+<DraggableRail initialPosition="center" aria-label="Travel photos">
+  {photos.map((photo) => (
+    <img key={photo.id} src={photo.src} alt={photo.alt} width={320} height={380} />
+  ))}
+</DraggableRail>
+```
+
+`center` starts halfway through the available scroll range, leaving room to drag in both directions when the content overflows. `end` starts at the reading-order end. Both work with `dir="rtl"`. This centers the entire content, not a specific item.
+
+The position is set when the DOM ref attaches, before the first client paint. It follows item/container size changes and newly added direct children until the first pointer, wheel, keyboard, focus-driven scroll, or programmatic scroll. After that, resizing or new content will not pull the reader back. `initialPosition` is an initial value: changing it on an existing instance does not reset scrolling. Use the native ref to move later, or change the component's `key` to start fresh.
+
+SSR HTML itself has no scroll offset; the initial position is applied during hydration. Give images explicit dimensions to reserve space before they load. Resize tracking uses `ResizeObserver`; where unavailable, initial placement and child-list updates still work.
 
 ## Programmatic scrolling
 

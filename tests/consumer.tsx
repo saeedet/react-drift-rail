@@ -4,6 +4,7 @@ import { DraggableRail, type DraggableRailProps, type RailDragEndInfo } from 're
 const ref = createRef<HTMLDivElement>();
 const props: DraggableRailProps = {
   gap: '1rem',
+  initialPosition: 'center',
   dir: 'rtl',
   'aria-label': 'Photos',
   onDragEnd: (event: RailDragEndInfo) => {
@@ -19,3 +20,6 @@ export const example = (
 ref.current?.scrollBy({ left: 20 });
 // @ts-expect-error gap must be a CSS length, not an object
 export const invalid = <DraggableRail gap={{ px: 12 }} />;
+
+// @ts-expect-error positions use explicit reading-order names
+export const invalidPosition = <DraggableRail initialPosition="middle" />;
