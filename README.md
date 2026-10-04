@@ -4,13 +4,11 @@
 
 A small React component for a horizontally draggable strip of images, cards, or arbitrary content. It uses native scrolling, preserves touch momentum, and adds mouse/pen dragging and keyboard navigation. No slides, autoplay, or active-item state.
 
-**Status:** pre-release. `react-drift-rail` is the proposed npm name; npm publishing is intentionally disabled with `private: true` until the first release. The GitHub repository and playground are public. The package has **zero runtime dependencies** beyond React peers. No Tailwind or CSS framework required.
+**Version:** 0.1.0. The package has **zero runtime dependencies** beyond React peers. No Tailwind or CSS framework required.
 
 [Try the live playground](https://saeedet.github.io/react-drift-rail/) — adjust the starting position, tilt, scrollbars, spacing, and momentum.
 
 ## Quick start
-
-After the first npm release:
 
 ```sh
 npm install react-drift-rail
@@ -30,7 +28,7 @@ export function Gallery() {
 }
 ```
 
-Before publication, run `npm ci && npm run dev` in this repository to try the playground. To install into another application, run `npm pack` here, then `npm install /absolute/path/to/react-drift-rail-0.1.0.tgz` in that application. The package requires its stylesheet; content remains ordinary HTML during SSR.
+Run `npm ci && npm run dev` in this repository to try the playground locally. To test a local package build in another application, run `npm pack` here, then install the generated tarball in that application. The package requires its stylesheet; content remains ordinary HTML during SSR.
 
 ![Drift Rail playground](https://raw.githubusercontent.com/saeedet/react-drift-rail/main/docs/demo.png)
 
@@ -243,7 +241,7 @@ Open the printed local URL under `/react-drift-rail/`. Demo image paths use Vite
 
 Read [CONTRIBUTING.md](https://github.com/saeedet/react-drift-rail/blob/main/CONTRIBUTING.md), [CODE_OF_CONDUCT.md](https://github.com/saeedet/react-drift-rail/blob/main/CODE_OF_CONDUCT.md), and [SECURITY.md](https://github.com/saeedet/react-drift-rail/blob/main/SECURITY.md). Small focused changes with reproducible interaction tests are welcome. [Architecture notes](https://github.com/saeedet/react-drift-rail/blob/main/docs/ARCHITECTURE.md) explain the design choices.
 
-Versioning follows SemVer. Before 1.0, breaking API changes increment the minor version and are documented in the changelog. Follow [the publishing checklist](https://github.com/saeedet/react-drift-rail/blob/main/docs/PUBLISHING.md) before the first release. The project is maintained at [saeedet/react-drift-rail](https://github.com/saeedet/react-drift-rail). The npm package remains unpublished.
+Versioning follows SemVer. Before 1.0, breaking API changes increment the minor version and are documented in the changelog. Follow [the publishing checklist](https://github.com/saeedet/react-drift-rail/blob/main/docs/PUBLISHING.md) for each release. The project is maintained at [saeedet/react-drift-rail](https://github.com/saeedet/react-drift-rail).
 
 ## Roadmap
 

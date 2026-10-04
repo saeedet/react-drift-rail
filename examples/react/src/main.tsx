@@ -319,7 +319,7 @@ function App() {
               <br />
               Use ordinary images, Next.js Image, or any React child.
             </p>
-            <span className="release-note">Open source · npm release pending</span>
+            <span className="release-note">Open source · v0.1.0</span>
           </div>
           <div className="code-window">
             <div className="code-title">

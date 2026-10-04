@@ -4,7 +4,7 @@
   "description": "A small, accessible React rail with native scrolling and pointer dragging.",
   "type": "module",
   "license": "MIT",
-  "private": true,
+  "private": false,
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -104,7 +104,7 @@
     "type": "git",
     "url": "git+https://github.com/saeedet/react-drift-rail.git"
   },
-  "homepage": "https://github.com/saeedet/react-drift-rail#readme",
+  "homepage": "https://saeedet.github.io/react-drift-rail/",
   "bugs": {
     "url": "https://github.com/saeedet/react-drift-rail/issues"
   },

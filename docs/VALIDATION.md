@@ -23,7 +23,7 @@ Validated on 2026-10-04 on macOS 14.6.1 arm64 with Node 26.0.0 and npm 11.12.1. 
 
 Tests cover rendering, refs, movement threshold, clicks, pointer cancellation, lost capture, blur, button release, disabled dragging, pointer filtering, pen dispatch, native touch delegation, editable controls, nested rails, consumer overrides, callback freshness, Strict Mode, keyboard boundaries, RTL, cleanup, optional inertia, reduced motion, and stationary release. Added coverage verifies initial start/center/end positions, both RTL directions, late image widths, async children, observer cleanup, preserved reading positions after interaction, hidden-scrollbar toggles, and optional demo tilt.
 
-The browser matrix checks real scrolling, dragging, click suppression, focus/child keyboard behavior, RTL, reduced motion, and automated WCAG 2 A/AA and 2.1 AA rules with axe. Chromium mobile additionally receives actual injected touch sequences: horizontal rail movement and vertical page movement both passed. Other projects skip that CDP-specific test. No physical-device, screen-reader, pinch gesture, or hardware stylus validation is claimed.
+The browser matrix checks real scrolling, dragging, click suppression, focus/child keyboard behavior, RTL, reduced motion, and automated WCAG 2 A/AA and 2.1 AA rules with axe. Chromium mobile additionally receives actual injected touch sequences: horizontal rail movement and vertical page movement both passed. Other projects skip that CDP-specific test. On 2026-10-04, the maintainer reported testing on a real device and confirmed that it worked as expected. Device, OS, browser, and individual gesture details were not recorded. No screen-reader, pinch gesture, or hardware stylus validation is claimed.
 
 ## WebKit limitation and supplemental coverage
 
@@ -73,12 +73,16 @@ At this revision, `npm run size` reports:
 
 Run `npm run size` for the current tarball size (roughly 21 KB compressed), including declarations, both formats, source maps, README, changelog, license, and package metadata. Documentation/metadata changes can change tarball size without changing runtime size. Enforced budgets are 6 KiB gzip per JS entry and 1 KiB gzip for CSS. React is a peer dependency and excluded from these sizes.
 
-## Remaining acceptance checks
+## Hosted validation and maintainer check
 
-- Run the full committed browser suite on current supported WebKit/OS and hosted CI.
+The [CI and playground deployment for 419b3b0](https://github.com/saeedet/react-drift-rail/actions/runs/37217590281) passed on Ubuntu, including the full current-runner Chromium, Firefox, desktop WebKit, and mobile browser profiles, production builds, Next.js browser coverage, and packed consumer installs. Later release commits must pass the same checks.
+
+The maintainer's real-device check passed as reported above. Manual assistive-technology coverage and additional device-specific checks remain useful follow-up work; they are not claimed by the automated suite.
+
+## Remaining manual coverage
+
 - Check shipping Safari and real iOS/Android browsers, including horizontal-to-vertical gestures, pinch zoom, rotation, and nested scroll regions.
 - Check a hardware pen and browser takeover/cancellation behavior.
 - Manually test VoiceOver and NVDA: region naming, focus visibility, child controls, and navigation order.
-- Configure real repository/author/contact metadata, enable private vulnerability reporting, and complete `docs/PUBLISHING.md` before publishing.
 
 Known v1 boundaries: native touch does not emit custom drag callbacks; configuration cleanup does not emit drag callbacks; programmatic smooth scrolling should not overlap custom momentum; legacy positive RTL scroll models are unsupported. No virtualization, snapping, looping, or autoplay is included.
