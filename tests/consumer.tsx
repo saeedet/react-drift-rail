@@ -5,6 +5,7 @@ const ref = createRef<HTMLDivElement>();
 const props: DraggableRailProps = {
   gap: '1rem',
   initialPosition: 'center',
+  hideScrollbar: true,
   dir: 'rtl',
   'aria-label': 'Photos',
   onDragEnd: (event: RailDragEndInfo) => {

@@ -17,6 +17,8 @@ export interface DraggableRailProps extends Omit<
 > {
   /** Reading-order initial viewport. Read once on mount. Default: 'start'. */
   initialPosition?: InitialPosition;
+  /** Hide native scrollbars while retaining all scrolling behavior. Default: false. */
+  hideScrollbar?: boolean;
   /** Item spacing; numbers are pixels. Default: 16. */
   gap?: CSSProperties['gap'];
   /** Disable custom pointer dragging; native scrolling and keyboard remain. */
@@ -31,6 +33,7 @@ export const DraggableRail = forwardRef<HTMLDivElement, DraggableRailProps>(func
   {
     children,
     initialPosition = 'start',
+    hideScrollbar = false,
     gap = 16,
     dragEnabled = true,
     momentum = false,
@@ -77,6 +80,7 @@ export const DraggableRail = forwardRef<HTMLDivElement, DraggableRailProps>(func
       tabIndex={tabIndex}
       className={['drift-rail', className].filter(Boolean).join(' ')}
       data-drift-rail=""
+      data-scrollbar-hidden={hideScrollbar ? '' : undefined}
       data-drag-enabled={dragEnabled ? '' : undefined}
       style={{ gap, ...style }}
       onKeyDown={(event) => {

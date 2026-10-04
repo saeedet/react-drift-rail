@@ -41,6 +41,21 @@ describe('DraggableRail', () => {
     expect(screen.getByRole('button')).toBeVisible();
     expect(rail).toHaveAttribute('tabindex', '0');
   });
+  it('toggles hidden scrollbars without removing focus or scrolling', () => {
+    const { rail, rerender } = setup({ hideScrollbar: true });
+    expect(rail).toHaveAttribute('data-scrollbar-hidden');
+    expect(rail).toHaveAttribute('tabindex', '0');
+    fireEvent.keyDown(rail, { key: 'End' });
+    expect(rail.scrollLeft).toBe(800);
+    rerender(
+      <DraggableRail aria-label="Gallery" hideScrollbar={false}>
+        Content
+      </DraggableRail>,
+    );
+    expect(rail).not.toHaveAttribute('data-scrollbar-hidden');
+    expect(rail.scrollLeft).toBe(800);
+    expect(rail).not.toHaveAttribute('hideScrollbar');
+  });
   it('adds a landmark only when named and respects an explicit role', () => {
     const { rerender, container } = render(<DraggableRail>Content</DraggableRail>);
     expect(container.firstChild).not.toHaveAttribute('role');

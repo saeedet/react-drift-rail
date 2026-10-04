@@ -37,6 +37,7 @@ Before publication, run `npm ci && npm run dev` in this repository to try the pl
 | Prop                                | Type                              | Default   | Purpose                                                     |
 | ----------------------------------- | --------------------------------- | --------- | ----------------------------------------------------------- |
 | `children`                          | `ReactNode`                       | —         | Any React content                                           |
+| `hideScrollbar`                     | `boolean`                         | `false`   | Hide native scrollbars, preserving scrolling and focus      |
 | `initialPosition`                   | `'start' \| 'center' \| 'end'`    | `'start'` | Initial reading-order viewport, read once on mount          |
 | `gap`                               | CSS `gap` value                   | `16`      | Numbers are pixels; strings accept CSS lengths              |
 | `dragEnabled`                       | `boolean`                         | `true`    | Enables custom mouse/pen dragging                           |
@@ -122,7 +123,15 @@ The stylesheet owns only horizontal flex layout, overflow, focus outline, scroll
 }
 ```
 
-Scrollbars remain visible according to OS preferences. To hide them by choice, add `scrollbar-width: none` and `.products::-webkit-scrollbar { display: none; }` in your own CSS, and provide another clear scrolling affordance. Do not override `display: flex`, horizontal overflow, or set `scroll-behavior: smooth` on the rail: pointer movement requires immediate scrolling. CSS `style.gap` overrides the `gap` prop.
+Scrollbars remain visible according to OS preferences by default. Set `hideScrollbar` to show only your content, while keeping dragging, touch, trackpad, keyboard, and programmatic scrolling. Provide an accessible label and a clear scrolling affordance when hiding the scrollbar. Do not override `display: flex`, horizontal overflow, or set `scroll-behavior: smooth` on the rail: pointer movement requires immediate scrolling. CSS `style.gap` overrides the `gap` prop.
+
+```tsx
+<DraggableRail initialPosition="center" hideScrollbar aria-label="Travel photos">
+  {photos.map((photo) => (
+    <img key={photo.id} src={photo.src} alt={photo.alt} width={320} height={380} />
+  ))}
+</DraggableRail>
+```
 
 Native inputs, selects, textareas, editable content, audio/video controls, and explicitly draggable elements are excluded from custom dragging. Add `data-rail-no-drag` to any other child area to preserve text selection, custom gestures, or native drag-and-drop there. Links and buttons remain draggable surfaces; a drag suppresses its ensuing pointer click. Tiny movement stays a click, and keyboard activation is preserved. Active dragging prevents selection only inside the rail.
 
