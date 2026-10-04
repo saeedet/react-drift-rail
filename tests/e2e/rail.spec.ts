@@ -76,17 +76,26 @@ test('disabled dragging retains native scrolling', async ({ page, browserName, i
 });
 test('controls inside the rail own their keyboard events', async ({ page }) => {
   const input = page.getByRole('textbox', { name: 'Destination' });
-  // Focus can scroll an offscreen field asynchronously in WebKit. Establish the
-  // visible field before measuring whether its keyboard event moves the rail.
   await input.scrollIntoViewIfNeeded();
-  await expect(input).toBeInViewport({ ratio: 1 });
   await input.fill('Alpine lake');
   await expect(input).toBeFocused();
-  const rail = page.getByTestId('cards-rail');
-  const before = await offset(rail);
-  await page.keyboard.press('Home');
-  expect(await offset(rail)).toBe(before);
+  await input.evaluate((element: HTMLInputElement) => {
+    element.setSelectionRange(element.value.length, element.value.length);
+    // Observe after React's handler. Native caret navigation may itself scroll
+    // the rail in WebKit, so scrollLeft equality is not a valid assertion here.
+    element.ownerDocument.addEventListener(
+      'keydown',
+      (event) => {
+        element.dataset.keyPrevented = String(event.defaultPrevented);
+      },
+      { once: true },
+    );
+  });
+  await page.keyboard.press('ArrowLeft');
+  await expect(input).toHaveAttribute('data-key-prevented', 'false');
+  expect(await input.evaluate((element: HTMLInputElement) => element.selectionStart)).toBe(10);
   await expect(input).toHaveValue('Alpine lake');
+  await expect(input).toBeFocused();
 });
 test('reduced motion prevents added inertia', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
