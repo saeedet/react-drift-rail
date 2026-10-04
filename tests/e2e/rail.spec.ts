@@ -76,7 +76,12 @@ test('disabled dragging retains native scrolling', async ({ page, browserName, i
 });
 test('controls inside the rail own their keyboard events', async ({ page }) => {
   const input = page.getByRole('textbox', { name: 'Destination' });
+  // Focus can scroll an offscreen field asynchronously in WebKit. Establish the
+  // visible field before measuring whether its keyboard event moves the rail.
+  await input.scrollIntoViewIfNeeded();
+  await expect(input).toBeInViewport({ ratio: 1 });
   await input.fill('Alpine lake');
+  await expect(input).toBeFocused();
   const rail = page.getByTestId('cards-rail');
   const before = await offset(rail);
   await page.keyboard.press('Home');
