@@ -226,6 +226,19 @@ npm run format
 
 `npm run dev` consumes source for fast feedback. Next.js and the tarball smoke tests consume built exports. Rebuild after library edits before using the Next.js example. `npm run size` budgets each JS entry to 6 KiB gzip and CSS to 1 KiB gzip, verifies package contents, and checks that React is external. Actual sizes and test results are recorded in [validation](https://github.com/saeedet/react-drift-rail/blob/main/docs/VALIDATION.md).
 
+## Live playground deployment
+
+The [playground](https://saeedet.github.io/react-drift-rail/) is hosted on GitHub Pages. Successful pushes to `main` deploy automatically after all CI checks pass; pull requests run verification only. The repository's Pages source must be set to **GitHub Actions**. The CI workflow also supports manual runs from `main`.
+
+To preview the production deployment locally:
+
+```sh
+npm run build:demo -- --base=/react-drift-rail/
+npx vite preview --config examples/react/vite.config.ts --base=/react-drift-rail/
+```
+
+Open the printed local URL under `/react-drift-rail/`. Demo image paths use Vite's base URL so both the root-path development server and the published project site work.
+
 ## Contributing and releases
 
 Read [CONTRIBUTING.md](https://github.com/saeedet/react-drift-rail/blob/main/CONTRIBUTING.md), [CODE_OF_CONDUCT.md](https://github.com/saeedet/react-drift-rail/blob/main/CODE_OF_CONDUCT.md), and [SECURITY.md](https://github.com/saeedet/react-drift-rail/blob/main/SECURITY.md). Small focused changes with reproducible interaction tests are welcome. [Architecture notes](https://github.com/saeedet/react-drift-rail/blob/main/docs/ARCHITECTURE.md) explain the design choices.

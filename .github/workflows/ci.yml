@@ -3,6 +3,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:
@@ -18,13 +19,37 @@ jobs:
       - run: npm run check
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test:e2e
-      - run: npm run build:demo
+      - run: npm run build:demo -- --base=/react-drift-rail/
       - run: npm run build:next
       - run: npm run test:next
       - run: npm run test:package
+      - name: Upload playground
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: examples/react/dist
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: browser-test-report
           path: playwright-report/
           retention-days: 7
+  deploy:
+    name: Deploy playground
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: github-pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
