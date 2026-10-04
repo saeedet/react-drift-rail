@@ -16,6 +16,9 @@ const scenes = [
 function App() {
   const rail = useRef<HTMLDivElement>(null);
   const [gap, setGap] = useState(28);
+  const [initialPosition, setInitialPosition] = useState<'start' | 'center' | 'end'>('center');
+  const [tilted, setTilted] = useState(false);
+  const [hideScrollbar, setHideScrollbar] = useState(true);
   const [momentum, setMomentum] = useState(true);
   const [enabled, setEnabled] = useState(true);
   const [rtl, setRtl] = useState(false);
@@ -70,8 +73,11 @@ function App() {
             </span>
           </div>
           <DraggableRail
+            key={`${initialPosition}-${rtl}`}
             ref={rail}
-            className={`photo-rail ${varied ? 'varied' : ''}`}
+            initialPosition={initialPosition}
+            hideScrollbar={hideScrollbar}
+            className={`photo-rail ${varied ? 'varied' : ''} ${tilted ? 'tilted' : ''}`}
             gap={gap}
             momentum={momentum}
             dragEnabled={enabled}
@@ -123,10 +129,44 @@ function App() {
               </button>
             </div>
           </div>
-          <div className="progress shell" aria-hidden="true">
-            <span style={{ width: `${Math.max(4, progress * 100)}%` }} />
-          </div>
+          {!hideScrollbar && (
+            <div className="progress shell" aria-hidden="true">
+              <span style={{ width: `${Math.max(4, progress * 100)}%` }} />
+            </div>
+          )}
           <div className="options shell" aria-label="Rail settings">
+            <label>
+              Start at
+              <select
+                aria-label="Start at"
+                value={initialPosition}
+                onChange={(event) => {
+                  setInitialPosition(event.target.value as 'start' | 'center' | 'end');
+                  setProgress(0);
+                  setDragging(false);
+                }}
+              >
+                <option value="start">Start</option>
+                <option value="center">Middle</option>
+                <option value="end">End</option>
+              </select>
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={tilted}
+                onChange={(event) => setTilted(event.target.checked)}
+              />{' '}
+              Tilt photos
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={!hideScrollbar}
+                onChange={(event) => setHideScrollbar(!event.target.checked)}
+              />{' '}
+              Show scrollbar
+            </label>
             <label className="gap-control">
               Spacing{' '}
               <input
@@ -161,7 +201,6 @@ function App() {
                 checked={rtl}
                 onChange={(e) => {
                   setRtl(e.target.checked);
-                  rail.current?.scrollTo({ left: 0 });
                 }}
               />{' '}
               RTL
@@ -211,6 +250,7 @@ function App() {
           </div>
           <DraggableRail
             gap={12}
+            hideScrollbar={hideScrollbar}
             aria-label="Travel notes"
             data-testid="cards-rail"
             className="cards-rail"
@@ -281,7 +321,7 @@ function App() {
               <span>React + TypeScript</span>
             </div>
             <pre>
-              <code>{`import { DraggableRail } from 'react-drift-rail';\nimport 'react-drift-rail/styles.css';\n\n<DraggableRail aria-label="A few favorites" gap={28}>\n  {photos.map(photo => (\n    <img key={photo.id} src={photo.src}\n      alt={photo.alt} width={320} height={380} />\n  ))}\n</DraggableRail>`}</code>
+              <code>{`import { DraggableRail } from 'react-drift-rail';\nimport 'react-drift-rail/styles.css';\n\n<DraggableRail aria-label="A few favorites" gap={28}\n  initialPosition="center" hideScrollbar>\n  {photos.map(photo => (\n    <img key={photo.id} src={photo.src}\n      alt={photo.alt} width={320} height={380} />\n  ))}\n</DraggableRail>`}</code>
             </pre>
           </div>
         </section>

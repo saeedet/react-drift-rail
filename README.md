@@ -133,6 +133,30 @@ Scrollbars remain visible according to OS preferences by default. Set `hideScrol
 </DraggableRail>
 ```
 
+### Flat or tilted photos
+
+The component renders flat by default; tilt is entirely optional consumer CSS. The playground has a **Tilt photos** checkbox. To reproduce it, toggle a class on your rail:
+
+```tsx
+<DraggableRail className={tilted ? 'gallery gallery--tilted' : 'gallery'} aria-label="Photos">
+  {children}
+</DraggableRail>
+```
+
+```css
+.gallery {
+  padding: 16px 4px;
+}
+.gallery--tilted > :nth-child(odd) {
+  transform: rotate(1.2deg);
+}
+.gallery--tilted > :nth-child(even) {
+  transform: rotate(-1.2deg);
+}
+```
+
+Omit the class for a normal, straight rail. Rotation is not built into the library, so arbitrary cards and consumer transforms remain under your control.
+
 Native inputs, selects, textareas, editable content, audio/video controls, and explicitly draggable elements are excluded from custom dragging. Add `data-rail-no-drag` to any other child area to preserve text selection, custom gestures, or native drag-and-drop there. Links and buttons remain draggable surfaces; a drag suppresses its ensuing pointer click. Tiny movement stays a click, and keyboard activation is preserved. Active dragging prevents selection only inside the rail.
 
 ## Next.js and SSR

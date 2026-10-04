@@ -159,10 +159,10 @@ h1 span {
   overflow: hidden;
   background: #394143;
 }
-.photo:nth-child(2n) {
+.photo-rail.tilted > .photo:nth-child(2n) {
   transform: rotate(-1.2deg);
 }
-.photo:nth-child(2n + 1) {
+.photo-rail.tilted > .photo:nth-child(2n + 1) {
   transform: rotate(1.2deg);
 }
 .photo img {
@@ -534,4 +534,13 @@ footer .brand {
   footer span:last-child {
     width: 100%;
   }
+}
+
+.options select {
+  background: #252925;
+  color: #eceee7;
+  border: 1px solid #ffffff30;
+  border-radius: 5px;
+  font: inherit;
+  padding: 5px 7px;
 }

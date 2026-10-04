@@ -7,7 +7,12 @@ export default function Page() {
       <p>DRIFT RAIL / NEXT.JS APP ROUTER</p>
       <h1>Your images. Native flow.</h1>
       <p>Drag, swipe, or focus this rail and press the arrow keys.</p>
-      <DraggableRail aria-label="Landscapes rendered with Next Image" gap={24}>
+      <DraggableRail
+        initialPosition="center"
+        hideScrollbar
+        aria-label="Landscapes rendered with Next Image"
+        gap={24}
+      >
         {['alpine', 'coast', 'dunes', 'forest', 'town', 'lake'].map((name) => (
           <Image
             key={name}

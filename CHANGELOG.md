@@ -2,6 +2,8 @@
 
 ## 0.1.0 — Unreleased
 
+- Playground controls for initial position, optional photo tilt, and scrollbar visibility.
+
 - Optional hidden scrollbars without disabling scrolling or keyboard access.
 
 - Initial start, center, or end positions, including RTL and late-loading content.

@@ -6,6 +6,14 @@ test('built exports hydrate inside an App Router Server Component', async ({ pag
   expect(response?.status()).toBe(200);
   const rail = page.getByRole('region', { name: 'Landscapes rendered with Next Image' });
   await expect(rail.getByRole('img')).toHaveCount(6);
+  await expect
+    .poll(() =>
+      rail.evaluate((element) =>
+        Math.abs(element.scrollLeft - (element.scrollWidth - element.clientWidth) / 2),
+      ),
+    )
+    .toBeLessThan(2);
+  await expect(rail).toHaveCSS('scrollbar-width', 'none');
   await rail.focus();
   await page.keyboard.press('End');
   expect(await rail.evaluate((element) => element.scrollLeft)).toBeGreaterThan(100);
