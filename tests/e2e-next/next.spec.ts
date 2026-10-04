@@ -1,0 +1,21 @@
+import { test, expect } from '@playwright/test';
+test('built exports hydrate inside an App Router Server Component', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  const response = await page.goto('/');
+  expect(response?.status()).toBe(200);
+  const rail = page.getByRole('region', { name: 'Landscapes rendered with Next Image' });
+  await expect(rail.getByRole('img')).toHaveCount(6);
+  await rail.focus();
+  await page.keyboard.press('End');
+  expect(await rail.evaluate((element) => element.scrollLeft)).toBeGreaterThan(100);
+  await page.keyboard.press('Home');
+  const box = await rail.boundingBox();
+  if (!box) throw new Error('Missing rail layout');
+  await page.mouse.move(box.x + 280, box.y + 120);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 100, box.y + 120, { steps: 12 });
+  await page.mouse.up();
+  expect(await rail.evaluate((element) => element.scrollLeft)).toBeGreaterThan(100);
+  expect(errors).toEqual([]);
+});

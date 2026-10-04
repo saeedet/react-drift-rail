@@ -1,0 +1,18 @@
+# First publication and subsequent releases
+
+This checkout does not publish automatically. `private: true` and the metadata guard intentionally block publication until ownership is configured. The proposed name is `react-drift-rail`; a registry lookup on 2026-10-04 returned 404. That is not a reservation or a guarantee that npm will permit this name.
+
+1. Recheck the name with `npm view react-drift-rail`. Confirm npm's naming/similarity rules and your publishing rights. If necessary, choose an owned scope and update all package-name references and the lockfile.
+2. Create the owner's public GitHub repository and push this local project. Set its default branch to `main` and require the CI check.
+3. Set real `author`, `repository` (type `git`, actual GitHub URL), `homepage`, and `bugs` metadata in `package.json`. Confirm the license holder. Replace README screenshot and documentation links with working public repository URLs for the npm listing. Add a private conduct contact and enable private vulnerability reporting. Set `private` to `false`, then run `npm install --package-lock-only`. Do not invent owner information.
+4. Complete the release's real-device and assistive-technology acceptance checks in `docs/VALIDATION.md`. Review the API and changelog; choose the intended first version with SemVer.
+5. Run `npm ci`, `npm run check`, `npm run test:e2e`, `npm run build:demo`, `npm run build:next`, `npm run test:next`, and `npm run test:package`. Install Playwright's browsers first as needed.
+6. Run `npm pack --dry-run`, then `npm pack`, and review the actual tarball. Only `dist`, README, license, changelog, and package metadata should ship. The development examples, private reference imagery, and tests must not ship.
+7. For a new package, create the first release from a trusted local machine with `npm login` and `npm publish --access public`, satisfying npm's authentication/2FA requirements. This is a manual publishing step for the owner; it has not been performed by this project. Commit and tag the exact reviewed release state before publishing.
+8. Once npm package settings exist, configure a GitHub Actions trusted publisher for the exact owner/repository, workflow **publish.yml**, and environment **npm**. Enable permission for direct `npm publish`. Configure the matching GitHub `npm` environment. Do not add a long-lived write token.
+9. For later releases, update version/changelog, commit, and push the matching `vX.Y.Z` tag. In GitHub Actions, manually run **Publish** against that tag. The workflow checks the tag/version, runs validation again, and publishes with OIDC. Use GitHub-hosted runners and a current Node 24/npm version (trusted publishing requires npm 11.5.1+ and Node 22.14+). The workflow's first successful use is still an external validation step.
+10. Confirm the npm dist-tag, install the released version into a consumer, and review generated provenance. Create GitHub release notes from the changelog.
+
+For a public repository and public package, npm trusted publishing automatically attaches provenance. The repository metadata must match the actual repository. A first local bootstrap publication will not have GitHub OIDC provenance; if provenance on the very first release is mandatory, choose and verify a currently supported npm bootstrap/staging process with npm before release.
+
+Reference: [npm trusted publishing documentation](https://docs.npmjs.com/trusted-publishers/). Recheck these service requirements at release time.

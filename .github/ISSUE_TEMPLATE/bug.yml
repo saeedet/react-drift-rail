@@ -1,0 +1,17 @@
+name: Bug report
+description: Report a reproducible scrolling, interaction, or integration problem.
+body:
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Small code example or reproduction URL, plus expected and actual behavior.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Package version, React version, browser/OS, and input method (mouse, touch, pen, keyboard).
+    validations:
+      required: true
