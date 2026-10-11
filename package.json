@@ -1,6 +1,6 @@
 {
   "name": "react-drift-rail",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A small, accessible React rail with native scrolling and pointer dragging.",
   "type": "module",
   "license": "MIT",

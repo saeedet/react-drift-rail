@@ -16,6 +16,7 @@ const scenes = [
 function App() {
   const rail = useRef<HTMLDivElement>(null);
   const [gap, setGap] = useState(28);
+  const [photoCount, setPhotoCount] = useState<number>(scenes.length);
   const [initialPosition, setInitialPosition] = useState<'start' | 'center' | 'end'>('center');
   const [tilted, setTilted] = useState(false);
   const [hideScrollbar, setHideScrollbar] = useState(true);
@@ -34,7 +35,7 @@ function App() {
           <span aria-hidden="true" className="brand-mark">
             ↔
           </span>{' '}
-          drift rail<span className="version">v0.1</span>
+          drift rail<span className="version">v0.1.1</span>
         </a>
         <nav aria-label="Main">
           <a href="https://github.com/saeedet/react-drift-rail">GitHub</a>
@@ -73,7 +74,7 @@ function App() {
             </span>
           </div>
           <DraggableRail
-            key={`${initialPosition}-${rtl}`}
+            key={`${initialPosition}-${rtl}-${photoCount}`}
             ref={rail}
             initialPosition={initialPosition}
             hideScrollbar={hideScrollbar}
@@ -97,7 +98,7 @@ function App() {
               );
             }}
           >
-            {scenes.map(([id, name, label], index) => (
+            {scenes.slice(0, photoCount).map(([id, name, label], index) => (
               <figure className={`photo photo-${index}`} key={id}>
                 <img
                   src={`${import.meta.env.BASE_URL}${id}.svg`}
@@ -141,6 +142,24 @@ function App() {
             </div>
           )}
           <div className="options shell" aria-label="Rail settings">
+            <label>
+              Photos
+              <select
+                aria-label="Photo count"
+                value={photoCount}
+                onChange={(event) => {
+                  setPhotoCount(Number(event.target.value));
+                  setProgress(0);
+                  setDragging(false);
+                }}
+              >
+                {scenes.map((_, index) => (
+                  <option key={index} value={index + 1}>
+                    {index + 1}
+                  </option>
+                ))}
+              </select>
+            </label>
             <label>
               Start at
               <select
@@ -220,6 +239,10 @@ function App() {
               Dragging
             </label>
           </div>
+          <p className="helper shell">
+            Choose fewer photos and Middle to see the collection center when it fits. Resize the
+            window to compare.
+          </p>
         </section>
         <section className="details shell" aria-label="Features">
           <div>
@@ -319,7 +342,7 @@ function App() {
               <br />
               Use ordinary images, Next.js Image, or any React child.
             </p>
-            <span className="release-note">Open source · v0.1.0</span>
+            <span className="release-note">Open source · v0.1.1</span>
           </div>
           <div className="code-window">
             <div className="code-title">

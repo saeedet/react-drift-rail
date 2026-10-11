@@ -387,3 +387,24 @@ for (const direction of ['ltr', 'rtl'] as const) {
     }
   });
 }
+
+test('playground photo count previews fitting and overflowing rails', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const rail = page.getByTestId('main-rail');
+  await expect(rail.locator('figure')).toHaveCount(6);
+  await page.getByLabel('Start at', { exact: true }).selectOption('center');
+  await page.getByLabel('Photo count', { exact: true }).selectOption('2');
+  await expect(rail.locator('figure')).toHaveCount(2);
+  await expectFittingCenter(rail);
+  await page.setViewportSize({ width: 420, height: 900 });
+  await expectCentered(rail);
+  expect(Math.abs(await offset(rail))).toBeGreaterThan(80);
+  await page.getByLabel('Photo count', { exact: true }).selectOption('1');
+  await expect(rail.locator('figure')).toHaveCount(1);
+  await expectFittingCenter(rail);
+  await page.getByLabel('Photo count', { exact: true }).selectOption('6');
+  await expect(rail.locator('figure')).toHaveCount(6);
+  await expectCentered(rail);
+  await drag(page, rail);
+  await expect(page.getByTestId('drag-events')).toHaveText('1');
+});
