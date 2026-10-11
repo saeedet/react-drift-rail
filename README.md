@@ -4,9 +4,9 @@
 
 A small React component for a horizontally draggable strip of images, cards, or arbitrary content. It uses native scrolling, preserves touch momentum, and adds mouse/pen dragging and keyboard navigation. No slides, autoplay, or active-item state.
 
-**Version:** 0.1.0. The package has **zero runtime dependencies** beyond React peers. No Tailwind or CSS framework required.
+**Version:** 0.1.1. The package has **zero runtime dependencies** beyond React peers. No Tailwind or CSS framework required.
 
-[Try the live playground](https://saeedet.github.io/react-drift-rail/) — adjust the starting position, tilt, scrollbars, spacing, and momentum.
+[Try the live playground](https://saeedet.github.io/react-drift-rail/) — adjust the photo count, starting position, tilt, scrollbars, spacing, and momentum.
 
 ## Quick start
 
@@ -40,7 +40,7 @@ Run `npm ci && npm run dev` in this repository to try the playground locally. To
 | ----------------------------------- | --------------------------------- | --------- | ----------------------------------------------------------- |
 | `children`                          | `ReactNode`                       | —         | Any React content                                           |
 | `hideScrollbar`                     | `boolean`                         | `false`   | Hide native scrollbars, preserving scrolling and focus      |
-| `initialPosition`                   | `'start' \| 'center' \| 'end'`    | `'start'` | Initial reading-order viewport, read once on mount          |
+| `initialPosition`                   | `'start' \| 'center' \| 'end'`    | `'start'` | Initial viewport; center also aligns fitting content        |
 | `gap`                               | CSS `gap` value                   | `16`      | Numbers are pixels; strings accept CSS lengths              |
 | `dragEnabled`                       | `boolean`                         | `true`    | Enables custom mouse/pen dragging                           |
 | `momentum`                          | `boolean`                         | `false`   | Adds mouse/pen inertia after release                        |
@@ -66,9 +66,11 @@ Exported types: `DraggableRailProps`, `RailDragInfo`, `RailDragEndInfo`. No priv
 </DraggableRail>
 ```
 
-`center` starts halfway through the available scroll range, leaving room to drag in both directions when the content overflows. `end` starts at the reading-order end. Both work with `dir="rtl"`. This centers the entire content, not a specific item.
+`center` starts at the midpoint when content overflows and centers the item group when all content fits within the viewport. The fitting layout stays centered as the viewport changes. `end` starts at the reading-order end. Both work with `dir="rtl"`. Consumer styles can override the alignment with `style={{ justifyContent: 'flex-start' }}`.
 
-The position is set when the DOM ref attaches, before the first client paint. It follows item/container size changes and newly added direct children until the first pointer, wheel, keyboard, focus-driven scroll, or programmatic scroll. After that, resizing or new content will not pull the reader back. `initialPosition` is an initial value: changing it on an existing instance does not reset scrolling. Use the native ref to move later, or change the component's `key` to start fresh.
+In the [playground](https://saeedet.github.io/react-drift-rail/), choose **Photos: 2** and **Start at: Middle**, then resize the window to compare fitting and overflowing content.
+
+The position is set when the DOM ref attaches, before the first client paint. It follows item/container size changes and newly added direct children until the first pointer, wheel, keyboard, focus-driven scroll, or programmatic scroll. After that, resizing or new content will not restore the initial scroll offset; fitting content still centers through layout. `initialPosition` is an initial value: changing it on an existing instance does not reset scrolling. Use the native ref to move later, or change the component's `key` to start fresh.
 
 SSR HTML itself has no scroll offset; the initial position is applied during hydration. Give images explicit dimensions to reserve space before they load. Resize tracking uses `ResizeObserver`; where unavailable, initial placement and child-list updates still work.
 
@@ -199,7 +201,7 @@ Automated checks cover interaction and common WCAG rules; they do not replace ma
 
 ## Browser support
 
-Target: current evergreen Chrome/Chromium, Firefox, Safari, mobile Safari, and Chromium Android. Required APIs include Pointer Events, pointer capture, `requestAnimationFrame`, and `MediaQueryList.addEventListener`; no legacy polyfills are shipped. The test matrix uses Playwright Chromium, Firefox, and WebKit plus mobile viewport/touch emulation. On macOS 14, current Playwright cannot create a page in its frozen WebKit build; see the validated workaround and exact test results in [validation](https://github.com/saeedet/react-drift-rail/blob/main/docs/VALIDATION.md).
+Target: current evergreen Chrome/Chromium, Firefox, Safari, mobile Safari, and Chromium Android. Required APIs include Pointer Events, pointer capture, `requestAnimationFrame`, and `MediaQueryList.addEventListener`; no legacy polyfills are shipped. The test matrix uses Playwright Chromium, Firefox, and WebKit plus mobile viewport/touch emulation. See [validation](https://github.com/saeedet/react-drift-rail/blob/main/docs/VALIDATION.md) for the full browser results and manual coverage limits.
 
 RTL uses the modern negative `scrollLeft` model and clamps overscroll. Legacy positive/reversed RTL models are unsupported. See [MDN's scrollLeft documentation](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollLeft). Native touch behavior follows [touch-action](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/touch-action). WebKit automation is useful coverage, but is not a claim of testing physical iPhones or the shipping Safari application.
 

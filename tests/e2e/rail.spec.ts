@@ -265,3 +265,146 @@ test('tracks late image sizing and new items until the reader interacts', async 
   await page.setViewportSize({ width: 800, height: 900 });
   await expect.poll(() => offset(rail)).toBeCloseTo(moved, 0);
 });
+
+// Measure physical layout; a zero scrollLeft cannot prove that fitting items center.
+async function fittingSpace(rail: Locator) {
+  return rail.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    const boxes = Array.from(element.children, (child) => child.getBoundingClientRect());
+    return {
+      left: Math.min(...boxes.map((box) => box.left)) - rect.left,
+      right: rect.right - Math.max(...boxes.map((box) => box.right)),
+      overflow: element.scrollWidth - element.clientWidth,
+    };
+  });
+}
+async function expectFittingCenter(rail: Locator) {
+  await expect
+    .poll(async () => {
+      const { left, right, overflow } = await fittingSpace(rail);
+      return overflow === 0 && left > 24 && Math.abs(left - right) < 2;
+    })
+    .toBe(true);
+  // Let the browser deliver ResizeObserver and clamped-scroll events before
+  // requesting another viewport change, including when CSS already fits.
+  await rail.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      }),
+  );
+}
+for (const direction of ['ltr', 'rtl'] as const) {
+  test(`fitting center balances free space with mixed widths and gaps in ${direction}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1200, height: 900 });
+    await page.goto(`/position-fixture.html?layout&dir=${direction}`);
+    const rail = page.getByRole('region', { name: 'Layout fixture' });
+    await expect(rail).toHaveCSS('justify-content', 'safe center');
+    await expect(rail).toHaveCSS('gap', '28px');
+    await expectFittingCenter(rail);
+    expect(await offset(rail)).toBe(0);
+    await expect(rail.locator(':scope > article')).toHaveCount(3);
+    for (const position of ['start', 'end', 'center'] as const) {
+      await page.goto(
+        `/position-fixture.html?layout&dir=${direction}&position=${position}&override=${position === 'center'}`,
+      );
+      const space = await fittingSpace(rail);
+      expect(direction === 'ltr' ? space.left : space.right).toBeCloseTo(26, 0);
+      expect(direction === 'ltr' ? space.right : space.left).toBeGreaterThan(200);
+      if (position === 'center') await expect(rail).toHaveCSS('justify-content', 'flex-start');
+    }
+  });
+  test(`center follows overflow-fit-overflow layout before interaction in ${direction}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 420, height: 900 });
+    await page.goto(`/position-fixture.html?layout&dir=${direction}`);
+    const rail = page.getByRole('region', { name: 'Layout fixture' });
+    await expectCentered(rail);
+    expect(Math.abs(await offset(rail))).toBeGreaterThan(100);
+    await page.setViewportSize({ width: 1200, height: 900 });
+    await expectFittingCenter(rail);
+    await page.setViewportSize({ width: 420, height: 900 });
+    await expectCentered(rail);
+    await rail.focus();
+    await page.keyboard.press('Home');
+    expect(Math.abs(await offset(rail))).toBeLessThan(1);
+    // Safe alignment must keep both the first and last item reachable.
+    await expect(rail.locator('article').first()).toBeInViewport({ ratio: 1 });
+    await page.keyboard.press('End');
+    await expect(rail.locator('article').last()).toBeInViewport({ ratio: 1 });
+  });
+  test(`resizing does not reclaim scroll position after user ownership in ${direction}`, async ({
+    page,
+    browserName,
+    isMobile,
+  }) => {
+    for (const interaction of ['drag', 'wheel', 'keyboard', 'imperative'] as const) {
+      await page.setViewportSize({ width: 420, height: 900 });
+      await page.goto(`/position-fixture.html?layout&dir=${direction}`);
+      const rail = page.getByRole('region', { name: 'Layout fixture' });
+      await expectCentered(rail);
+      const before = await offset(rail);
+      const sign = direction === 'rtl' ? -1 : 1;
+      if (interaction === 'drag') await drag(page, rail, -60 * sign);
+      if (interaction === 'wheel') {
+        if (browserName === 'webkit' && isMobile) {
+          // Mobile WebKit cannot receive Playwright wheel input. Exercise the same
+          // wheel-intent listener followed by a native scroll command instead.
+          await rail.evaluate((element, value) => {
+            element.dispatchEvent(new WheelEvent('wheel', { deltaX: value, bubbles: true }));
+            element.scrollBy({ left: value });
+          }, sign * 40);
+        } else {
+          await rail.hover();
+          await page.mouse.wheel(sign * 40, 0);
+        }
+      }
+      if (interaction === 'keyboard') {
+        await rail.focus();
+        await page.keyboard.press('End');
+      }
+      if (interaction === 'imperative')
+        await rail.evaluate((element) => {
+          element.scrollLeft = 0;
+        });
+      await expect.poll(async () => Math.abs((await offset(rail)) - before)).toBeGreaterThan(20);
+      const moved = await offset(rail);
+      await page.setViewportSize({ width: 360, height: 900 });
+      await expect.poll(() => offset(rail)).toBeCloseTo(moved, 0);
+      await page.setViewportSize({ width: 1200, height: 900 });
+      await expectFittingCenter(rail);
+      await page.setViewportSize({ width: 420, height: 900 });
+      await expect
+        .poll(async () => rail.evaluate((element) => element.scrollWidth - element.clientWidth))
+        .toBeGreaterThan(200);
+      expect(Math.abs(await offset(rail))).toBeLessThan(1);
+      await rail.focus();
+      await page.keyboard.press('End');
+      expect(Math.abs(await offset(rail))).toBeGreaterThan(200);
+    }
+  });
+}
+
+test('playground photo count previews fitting and overflowing rails', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const rail = page.getByTestId('main-rail');
+  await expect(rail.locator('figure')).toHaveCount(6);
+  await page.getByLabel('Start at', { exact: true }).selectOption('center');
+  await page.getByLabel('Photo count', { exact: true }).selectOption('2');
+  await expect(rail.locator('figure')).toHaveCount(2);
+  await expectFittingCenter(rail);
+  await page.setViewportSize({ width: 420, height: 900 });
+  await expectCentered(rail);
+  expect(Math.abs(await offset(rail))).toBeGreaterThan(80);
+  await page.getByLabel('Photo count', { exact: true }).selectOption('1');
+  await expect(rail.locator('figure')).toHaveCount(1);
+  await expectFittingCenter(rail);
+  await page.getByLabel('Photo count', { exact: true }).selectOption('6');
+  await expect(rail.locator('figure')).toHaveCount(6);
+  await expectCentered(rail);
+  await drag(page, rail);
+  await expect(page.getByTestId('drag-events')).toHaveText('1');
+});

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1 — 2026-10-11
+
+- Fix `initialPosition="center"` to center the item group when content fits while preserving midpoint scrolling when it overflows.
+- Preserve initial-position tracking when a resize clamps the native scroll offset, without reclaiming scrolling after user interaction.
+- Add a photo-count selector to the live playground for testing fitting and overflowing rails.
+
 ## 0.1.0 — 2026-10-04
 
 - Playground controls for initial position, optional photo tilt, and scrollbar visibility.

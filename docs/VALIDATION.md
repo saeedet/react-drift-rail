@@ -1,6 +1,6 @@
 # Validation record
 
-Validated on 2026-10-04 on macOS 14.6.1 arm64 with Node 26.0.0 and npm 11.12.1. CI is configured for Node 24 on Ubuntu. Hosted results are available in the [CI workflow](https://github.com/saeedet/react-drift-rail/actions/workflows/ci.yml); the results below describe local validation.
+Version 0.1.1 validated on 2026-10-11 on macOS 27.0.1 arm64 with Node 26.11.0 and npm 11.20.0. CI is configured for Node 24 on Ubuntu. Hosted results are available in the [CI workflow](https://github.com/saeedet/react-drift-rail/actions/workflows/ci.yml); the results below describe local validation.
 
 ## Passed locally
 
@@ -9,9 +9,8 @@ Validated on 2026-10-04 on macOS 14.6.1 arm64 with Node 26.0.0 and npm 11.12.1. 
 | Library build                   | ESM, CJS, declarations, CSS, source maps generated                                                      |
 | Strict TypeScript               | Source plus consumer test using package exports passed                                                  |
 | ESLint / Prettier               | Passed                                                                                                  |
-| Unit / SSR tests                | 44 passed                                                                                               |
-| Current Playwright 1.63.0       | 37 browser cases passed; 2 intentionally skipped                                                        |
-| Supplementary Playwright 1.61.1 | 24 WebKit cases passed; 2 intentionally skipped                                                         |
+| Unit / SSR tests                | 51 passed                                                                                               |
+| Current Playwright 1.63.0       | Full five-profile matrix: 96 passed; 4 intentionally skipped                                            |
 | React demo production build     | Passed with Vite 8.3.2                                                                                  |
 | Next.js production build        | Passed with Next.js 16.3.8; App Router page prerendered                                                 |
 | Next.js production browser test | 1 passed: built package imports, six Next Image children, hydration, keyboard, dragging, no page errors |
@@ -25,41 +24,15 @@ Tests cover rendering, refs, movement threshold, clicks, pointer cancellation, l
 
 The browser matrix checks real scrolling, dragging, click suppression, focus/child keyboard behavior, RTL, reduced motion, and automated WCAG 2 A/AA and 2.1 AA rules with axe. Chromium mobile additionally receives actual injected touch sequences: horizontal rail movement and vertical page movement both passed. Other projects skip that CDP-specific test. On 2026-10-04, the maintainer reported testing on a real device and confirmed that it worked as expected. Device, OS, browser, and individual gesture details were not recorded. No screen-reader, pinch gesture, or hardware stylus validation is claimed.
 
-## WebKit limitation and supplemental coverage
+## Browser layout regressions
 
-Playwright 1.63.0 uses Chromium 153.0.8010.12 and Firefox 155.0 here. Both desktop profiles and the Pixel 7 Chromium profile passed. macOS 14 receives frozen WebKit revision 2251, reporting version 26.5. The current runner fails during page creation with:
+All five committed profiles passed with the current Playwright 1.63.0 runner: desktop Chromium, Firefox, WebKit 26.6, Pixel 7 Chromium, and iPhone 13 WebKit. Four CDP-only touch cases are intentionally skipped outside mobile Chromium. The new tests measure both sides of the item group rather than inferring alignment from `scrollLeft`.
 
-```text
-browserContext.newPage: Protocol error (Page.overrideSetting): Unknown setting: PushAPIEnabled
-```
+Coverage includes fitting and overflowing center layouts, start/end alignment, consumer overrides, variable card widths, 28px gaps, LTR/RTL, overflow-to-fit-to-overflow resizing, and preserved ownership after dragging, wheel input, keyboard navigation, or imperative scrolling. The playground test changes the photo count from six to two, resizes into overflow, reduces it to one, and restores six before dragging. Server rendering includes the fitting-content alignment without needing browser globals.
 
-This happens before application code executes. The unfiltered `npm run test:e2e` therefore does **not** pass on this specific host with the committed current runner. The project keeps the full WebKit matrix enabled for supported hosts/CI, rather than hiding these failures.
+Desktop visual inspection with two photos measured 404px of free space on both sides at 1440px. The 390px mobile page had no document-wide horizontal overflow. The existing late-image, async-child, inertia, reduced-motion, hidden-scrollbar, focus, and native-touch cases remain in the full suite.
 
-An isolated Playwright 1.61.1 installation outside the repository successfully ran the same test source against the same local demo and the frozen WebKit. Desktop Safari and iPhone 13 profiles each passed twelve applicable tests. The mobile WebKit profile uses native `scrollBy` in place of unsupported wheel injection. The two CDP-only touch cases were skipped. No package code or dependency files were patched to obtain these results.
-
-To reproduce the current-runner checks on this Mac:
-
-```sh
-npm run test:e2e -- --project=chromium --project=firefox --project=mobile-chromium
-```
-
-For supplementary WebKit validation, run `npm run dev -- --host 127.0.0.1 --port 5173`. In a separate temporary directory, install `@playwright/test@1.61.1` and `@axe-core/playwright`, copy `tests/e2e/rail.spec.ts` there, and run it with this configuration:
-
-```ts
-import { defineConfig, devices } from '@playwright/test';
-export default defineConfig({
-  testDir: '.',
-  testMatch: 'rail.spec.ts',
-  workers: 2,
-  use: { baseURL: 'http://127.0.0.1:5173' },
-  projects: [
-    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
-    { name: 'mobile-webkit', use: { ...devices['iPhone 13'] } },
-  ],
-});
-```
-
-The isolated runner reuses the downloaded frozen browser. Keep this diagnostic setup outside the package. Run the committed full suite on a supported, current OS before release. Playwright's [browser documentation](https://playwright.dev/docs/browsers) explains that its WebKit is a patched engine, not the shipping Safari app.
+During the earlier 0.1.0 validation, macOS 14's frozen WebKit required a supplemental runner. That host limitation does not apply to this 0.1.1 run on macOS 27. Playwright uses a patched WebKit engine; passing it is not a claim of testing shipping Safari or a physical device for this patch.
 
 ## Package size
 
@@ -67,15 +40,15 @@ At this revision, `npm run size` reports:
 
 | Artifact            | Bytes | Gzip bytes |
 | ------------------- | ----: | ---------: |
-| ESM JavaScript      | 6,132 |      2,480 |
-| CommonJS JavaScript | 6,667 |      2,714 |
+| ESM JavaScript      | 6,327 |      2,521 |
+| CommonJS JavaScript | 6,862 |      2,755 |
 | CSS                 |   730 |        352 |
 
-Run `npm run size` for the current tarball size (roughly 21 KB compressed), including declarations, both formats, source maps, README, changelog, license, and package metadata. Documentation/metadata changes can change tarball size without changing runtime size. Enforced budgets are 6 KiB gzip per JS entry and 1 KiB gzip for CSS. React is a peer dependency and excluded from these sizes.
+Run `npm run size` for the current tarball size (roughly 22 KB compressed), including declarations, both formats, source maps, README, changelog, license, and package metadata. Documentation/metadata changes can change tarball size without changing runtime size. Enforced budgets are 6 KiB gzip per JS entry and 1 KiB gzip for CSS. React is a peer dependency and excluded from these sizes.
 
 ## Hosted validation and maintainer check
 
-The [CI and playground deployment for 419b3b0](https://github.com/saeedet/react-drift-rail/actions/runs/37217590281) passed on Ubuntu, including the full current-runner Chromium, Firefox, desktop WebKit, and mobile browser profiles, production builds, Next.js browser coverage, and packed consumer installs. Later release commits must pass the same checks.
+The [CI and playground deployment for 419b3b0](https://github.com/saeedet/react-drift-rail/actions/runs/37217590281) passed on Ubuntu, including the full current-runner Chromium, Firefox, desktop WebKit, and mobile browser profiles, production builds, Next.js browser coverage, and packed consumer installs. The current 0.1.1 release state must also pass the same checks; see the linked CI workflow for its hosted result.
 
 The maintainer's real-device check passed as reported above. Manual assistive-technology coverage and additional device-specific checks remain useful follow-up work; they are not claimed by the automated suite.
 

@@ -15,7 +15,7 @@ export interface DraggableRailProps extends Omit<
   HTMLAttributes<HTMLDivElement>,
   'onDragStart' | 'onDragEnd'
 > {
-  /** Reading-order initial viewport. Read once on mount. Default: 'start'. */
+  /** Initial viewport, read once on mount. Center also aligns fitting content. Default: 'start'. */
   initialPosition?: InitialPosition;
   /** Hide native scrollbars while retaining all scrolling behavior. Default: false. */
   hideScrollbar?: boolean;
@@ -82,7 +82,11 @@ export const DraggableRail = forwardRef<HTMLDivElement, DraggableRailProps>(func
       data-drift-rail=""
       data-scrollbar-hidden={hideScrollbar ? '' : undefined}
       data-drag-enabled={dragEnabled ? '' : undefined}
-      style={{ gap, ...style }}
+      style={{
+        gap,
+        justifyContent: initial.current === 'center' ? 'safe center' : undefined,
+        ...style,
+      }}
       onKeyDown={(event) => {
         onKeyDown?.(event);
         if (
