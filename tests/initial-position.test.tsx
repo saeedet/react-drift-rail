@@ -42,6 +42,46 @@ describe('initial position', () => {
     );
     expect(ref.current?.scrollLeft).toBe(expected);
   });
+  it.each(['ltr', 'rtl'] as const)(
+    'centers fitting content in %s without scrolling',
+    (direction) => {
+      width = 400;
+      render(
+        <DraggableRail initialPosition="center" style={{ direction }} aria-label="Items" gap={28}>
+          <span>First</span>
+          <span>Second</span>
+        </DraggableRail>,
+      );
+      const rail = screen.getByRole('region');
+      expect(rail.scrollLeft).toBe(0);
+      expect(rail).toHaveStyle({ justifyContent: 'safe center', gap: '28px' });
+      expect(rail.children).toHaveLength(2);
+    },
+  );
+  it.each(['start', 'end'] as const)('preserves fitting %s alignment', (initialPosition) => {
+    width = 400;
+    render(
+      <DraggableRail initialPosition={initialPosition} aria-label="Items">
+        Content
+      </DraggableRail>,
+    );
+    const rail = screen.getByRole('region');
+    expect(rail.scrollLeft).toBe(0);
+    expect(rail.style.justifyContent).toBe('');
+  });
+  it('respects consumer alignment and spacing overrides', () => {
+    render(
+      <DraggableRail
+        initialPosition="center"
+        aria-label="Items"
+        gap={28}
+        style={{ justifyContent: 'flex-start', gap: 40 }}
+      >
+        Content
+      </DraggableRail>,
+    );
+    expect(screen.getByRole('region')).toHaveStyle({ justifyContent: 'flex-start', gap: '40px' });
+  });
   it('repositions for late layout until the first pointer intent', () => {
     render(
       <DraggableRail initialPosition="center" aria-label="Items">
@@ -72,6 +112,25 @@ describe('initial position', () => {
     act(() => resize());
     expect(rail.scrollLeft).toBe(before);
   });
+  it.each(['ltr', 'rtl'] as const)(
+    'keeps tracking when layout clamps the offset before resize in %s',
+    (direction) => {
+      render(
+        <DraggableRail initialPosition="center" aria-label="Items" style={{ direction }}>
+          Content
+        </DraggableRail>,
+      );
+      const rail = screen.getByRole('region');
+      expect(rail.scrollLeft).toBe(direction === 'rtl' ? -400 : 400);
+      width = 400;
+      rail.scrollLeft = 0;
+      fireEvent.scroll(rail);
+      act(() => resize());
+      width = 1200;
+      act(() => resize());
+      expect(rail.scrollLeft).toBe(direction === 'rtl' ? -400 : 400);
+    },
+  );
   it('does not mistake its own scroll notification for user movement', () => {
     render(
       <DraggableRail initialPosition="center" aria-label="Items">
@@ -112,12 +171,14 @@ describe('initial position', () => {
       </DraggableRail>,
     );
     expect(rail.scrollLeft).toBe(400);
+    expect(rail).toHaveStyle({ justifyContent: 'safe center' });
     rerender(
       <DraggableRail key="fresh" initialPosition="end" aria-label="Items">
         Content
       </DraggableRail>,
     );
     expect(screen.getByRole('region').scrollLeft).toBe(800);
+    expect(screen.getByRole('region').style.justifyContent).toBe('');
   });
   it('cleans observers on unmount and remains safe in Strict Mode', () => {
     const { unmount } = render(

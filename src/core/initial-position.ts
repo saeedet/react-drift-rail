@@ -1,4 +1,4 @@
-import { scrollBounds } from './math';
+import { clamp, scrollBounds } from './math';
 
 export type InitialPosition = 'start' | 'center' | 'end';
 
@@ -39,7 +39,12 @@ export function attachInitialPosition(element: HTMLDivElement, position: Initial
   }
   function onScroll() {
     // Focus navigation and imperative scroll commands also end initial positioning.
-    if (Math.abs(element.scrollLeft - applied) > 1) stop();
+    if (Math.abs(element.scrollLeft - applied) <= 1) return;
+    // A resize can clamp the old offset before ResizeObserver delivers. That is
+    // layout, not user ownership; allow the observer to place the new viewport.
+    const rtl = view.getComputedStyle(element).direction === 'rtl';
+    const { min, max } = scrollBounds(element.scrollWidth, element.clientWidth, rtl);
+    if (Math.abs(element.scrollLeft - clamp(applied, min, max)) > 1) stop();
   }
   element.addEventListener('pointerdown', stop, { capture: true, passive: true });
   element.addEventListener('wheel', stop, { capture: true, passive: true });
